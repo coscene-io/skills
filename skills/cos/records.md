@@ -56,11 +56,13 @@ cocli record update records/abc-123 --update-labels "env=prod" # replace
 cocli record update records/abc-123 --delete-labels "env"      # delete
 ```
 
+**Note:** `-l` (append), `--update-labels` (replace), and `--delete-labels` (remove) are mutually exclusive — use only one per invocation.
+
 ### record list — JSON: Yes
 
 List records with filtering and pagination.
 
-**Flags:** `-p` (project), `-v` (verbose), `-s` (JSON Logic search), `--all` (fetch all), `--page-size` (10-100), `--page-token` (preferred), `--include-archive`, `--labels` (`key=val`), `--keywords` (text search), `-o json`
+**Flags:** `-p` (project), `-v` (verbose), `-s` (JSON Logic search — mutex with `--labels`, `--keywords`, `--include-archive`), `--all` (fetch all — mutex with `--page-size`, `--page-token`), `--page-size` (10-100), `--page-token` (preferred), `--include-archive`, `--labels` (`key=val`), `--keywords` (text search), `-o json`
 
 ```bash
 cocli record list -o json
@@ -178,15 +180,18 @@ Moments mark key time segments within a record — critical events, failures, or
 
 ### record moment create — JSON: No
 
-**Flags:** `-p` (project), `-n` (name), `-d` (description), `-D` (duration), `-T` (trigger-time, RFC 3339), `-j` (custom fields JSON), `-a` (assigner), `-e` (assignee), `-R` (rule), `-s` (search), `-S` (sync-task)
+**Flags:** `-p` (project), `-n` (name, required), `-d` (description), `-D` (duration in seconds, required), `-T` (trigger-time in epoch seconds, required), `-j` (custom fields JSON), `-a` (assigner), `-e` (assignee), `-R` (rule), `-s` (skip-create-task), `-S` (sync-task)
 
 ```bash
 cocli record moment create records/abc-123 \
   -n "Collision detected" \
-  -T "2026-04-28T14:30:00Z" \
+  -D 10 \
+  -T 1777386600 \
   -d "Front lidar detected obstacle at 2m" \
   -j '{"severity": "high", "sensor": "lidar_front"}'
 ```
+
+**Tip:** Convert timestamps: `date -d '2026-04-28T14:30:00Z' +%s` (Linux) or `gdate -d '...' +%s` (macOS with coreutils).
 
 ### record moment list — JSON: Yes
 

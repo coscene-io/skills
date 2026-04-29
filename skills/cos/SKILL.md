@@ -52,7 +52,7 @@ cocli has several commands that prompt for interactive input. In agent/automatio
 |---|---|---|
 | `-f` / `--force` | `delete`, `copy`, `move`, `action run` | Skip confirmation prompts |
 | `-y` / `--yes` | `project create` | Skip creation confirmation |
-| `--skip-params` | `action run` | Skip parameter input prompts |
+| `--skip-params` | `action run` (without `-P`) | Skip param prompts, use defaults. Mutex with `-P`. |
 | `--no-tty` | `upload` commands | Disable TTY progress bars |
 
 ## Command Lookup Table
@@ -76,7 +76,7 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | List records | `cocli record list -o json` | Yes |
 | List all records (no pagination) | `cocli record list --all -o json` | Yes |
 | Search records by keyword | `cocli record list --keywords "lidar" -o json` | Yes |
-| Search records by JSON Logic | `cocli record list -s '<json-logic>' -o json` | Yes |
+| Search records by JSON Logic (`-s` mutex with `--labels`, `--keywords`, `--include-archive`) | `cocli record list -s '<json-logic>' -o json` | Yes |
 | Filter by labels | `cocli record list --labels "env=prod" -o json` | Yes |
 | Include archived records | `cocli record list --include-archive -o json` | Yes |
 | Describe single record | `cocli record describe <record> -o json` | Yes |
@@ -93,7 +93,7 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | Replace labels on record | `cocli record update <record> --update-labels "k=v"` | No |
 | Delete labels from record | `cocli record update <record> --delete-labels "oldkey"` | No |
 | Delete a record | `cocli record delete <record> -f` | No |
-| Create moment in record | `cocli record moment create <record> -n "event" -T <timestamp>` | No |
+| Create moment in record | `cocli record moment create <record> -n "event" -D 10 -T <epoch-seconds>` | No |
 
 ### Manage Files
 
@@ -116,7 +116,7 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | Task | Command | JSON? |
 |---|---|---|
 | List available actions | `cocli action list -o json` | Yes |
-| Run action on record | `cocli action run <action> <record> -P key=val -f --skip-params` | No |
+| Run action on record | `cocli action run <action> <record> -P key=val -f` | No |
 | List action runs | `cocli action list-run -o json` | Yes |
 | List runs for a record | `cocli action list-run -r <record> -o json` | Yes |
 
@@ -173,7 +173,7 @@ Match user intent to the correct command sequence.
 **Run processing on a record:**
 
 1. `cocli action list -o json` → find action name
-2. `cocli action run <action> <record> -P key=val -f --skip-params`
+2. `cocli action run <action> <record> -P key=val -f`
 3. **CRITICAL:** action run is ASYNC. Exit 0 = submitted, not completed.
 4. Poll: `cocli action list-run -r <record> -o json` until status shows completion.
 
@@ -187,7 +187,7 @@ Match user intent to the correct command sequence.
 
 - Metadata: `cocli record update <record> -t "new title" -l key=val`
 - Labels: `--update-labels` (replace), `--delete-labels` (remove), `-l` (append)
-- Moments: `cocli record moment create <record> -n "event" -T <rfc3339-timestamp>`
+- Moments: `cocli record moment create <record> -n "event" -D 10 -T <epoch-seconds>`
 
 **Environment check:**
 Go to Preflight section above.
@@ -244,7 +244,7 @@ These are hard rules. Do not reason around them.
 | "I can skip `-f` on action run" | NEVER. Without `-f`, cocli prompts interactively and hangs. |
 | "I'll hardcode the endpoint URL" | NEVER. The active profile handles endpoint selection. |
 | "I'll use `record view` to see the record" | `record view` only prints a URL (or opens browser with `-w`). Use `record describe -o json`. |
-| "I'll skip `--skip-params` on action run" | Without it, cocli may prompt for missing params interactively. Always pass `--skip-params`. |
+| "I'll skip `--skip-params` on action run" | Use `--skip-params` for defaults (no `-P`), or `-P key=val` for explicit params. They are mutually exclusive — never combine. |
 | "I'll use `--page` for pagination" | Use `--page-token` or `--all`. `--page` is deprecated for records. |
 | "Action run returned 0, so the action completed" | action run is ASYNC. Exit 0 means submitted, not completed. Poll `action list-run`. |
 | "I'll upload without `--no-tty`" | In non-interactive contexts, always pass `--no-tty` to prevent TTY prompts. |
@@ -267,5 +267,5 @@ These are hard rules. Do not reason around them.
 | Upload stalls or is slow | Default parallelism | Increase `-P` (parallel) and tune `-s` (part-size) |
 | Action run fails | Bad params or wrong action name | Run `action list -o json` first; check `-P key=val` pairs |
 | Action run returns 0 but nothing happened | action run is ASYNC | Poll `action list-run -r <record> -o json` for actual status |
-| "interactive input" error | Missing `-f` or `--skip-params` | Add `-f --skip-params` to action run; `--no-tty` to uploads |
+| "interactive input" error | Missing `-f`, `-P`, or `--skip-params` | Add `-f` and either `-P key=val` or `--skip-params` to action run; `--no-tty` to uploads |
 | Record search returns empty | Wrong project context | Verify project with `cocli login current`; try `--all` flag |

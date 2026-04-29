@@ -58,7 +58,7 @@ cocli action list -o json
 Submit an action for execution against a record.
 
 ```bash
-cocli action run <action-name> <record-name> -P key=val -f --skip-params
+cocli action run <action-name> <record-name> -P key=val -f
 ```
 
 ### CRITICAL: action run is ASYNC
@@ -76,22 +76,27 @@ cocli action run <action-name> <record-name> -P key=val -f --skip-params
 
 ### Non-Interactive Pattern (required for automation)
 
-Always pass all three flags: `-P` for each parameter, `-f`, and `--skip-params`.
+Two valid patterns — `-P` and `--skip-params` are **mutually exclusive**:
 
 ```bash
-# Correct — fully non-interactive
+# Pattern 1: Explicit params (overrides defaults)
 cocli action run actions/yolo-inference records/abc-123 \
   -P model=yolov8n \
   -P threshold=0.5 \
-  -f --skip-params
+  -f
+
+# Pattern 2: All defaults (skip param prompts)
+cocli action run actions/decompress records/abc-123 -f --skip-params
 
 # WRONG — will hang waiting for input
 cocli action run actions/yolo-inference records/abc-123
+
+# WRONG — -P and --skip-params are mutually exclusive
+cocli action run actions/yolo-inference records/abc-123 -P model=yolov8n -f --skip-params
 ```
 
 Without `-f`: the command prompts for confirmation.
-Without `--skip-params`: the command prompts for each missing parameter.
-Without both: double hang, unusable in automation.
+Without `-P` or `--skip-params`: the command prompts for each parameter interactively.
 
 ### Multiple Parameters
 
@@ -166,7 +171,7 @@ ACTION="actions/yolo-inference"
 RECORD="records/abc-123"
 
 # Submit
-cocli action run "$ACTION" "$RECORD" -P model=yolov8n -f --skip-params
+cocli action run "$ACTION" "$RECORD" -P model=yolov8n -f
 
 # Poll
 while true; do

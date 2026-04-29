@@ -149,7 +149,7 @@ cocli action list -o json | jq -c '.[] | {name, displayName}'
 
 # Step 3: Run the action (ASYNC — exits immediately on submission)
 ACTION="actions/my-processor"
-cocli action run "$ACTION" "$RECORD" -P model=yolo -P threshold=0.5 -f --skip-params
+cocli action run "$ACTION" "$RECORD" -P model=yolo -P threshold=0.5 -f
 # Exit 0 = SUBMITTED, NOT COMPLETED.
 
 # Step 4: Poll for completion
@@ -168,7 +168,7 @@ cocli record file list "$RECORD" -R -o json | jq '.'
 ```
 
 **What can go wrong:**
-- Step 3: Without `-f --skip-params`, command hangs waiting for interactive input.
+- Step 3: Without `-f` and either `-P` or `--skip-params`, command hangs waiting for interactive input. Note: `-P` and `--skip-params` are mutually exclusive.
 - Step 3: Exit 0 does NOT mean the action succeeded — it means it was submitted. Always poll.
 - Step 4: `.[0]` assumes the most recent run is first. Filter by action name if multiple actions target the same record.
 - Step 4: If status stays `RUNNING` indefinitely, check action logs in the web UI.
@@ -189,14 +189,16 @@ cocli record moment list records/abc-123 -o json | jq '.'
 # Step 3: Create a moment with timestamp and attributes
 cocli record moment create records/abc-123 \
   -n "Collision event" \
-  -T "2026-04-28T14:30:00Z" \
+  -D 10 \
+  -T 1777386600 \
   -d "Front lidar detected obstacle at 2m range" \
   -j '{"severity": "critical", "sensor": "lidar_front", "distance_m": 2.1}'
 
 # Step 4: Create a second moment
 cocli record moment create records/abc-123 \
   -n "Lane departure" \
-  -T "2026-04-28T14:32:15Z" \
+  -D 5 \
+  -T 1777386735 \
   -d "Vehicle crossed lane boundary" \
   -j '{"severity": "warning", "camera": "front_wide"}'
 
@@ -206,7 +208,7 @@ cocli record moment list records/abc-123 -o json | jq 'length'
 ```
 
 **What can go wrong:**
-- Step 3: Invalid timestamp format → use RFC 3339 (`2026-04-28T14:30:00Z`).
+- Step 3: Invalid trigger time → `-T` takes epoch seconds (float), not RFC 3339. Convert: `date -d '2026-04-28T14:30:00Z' +%s` (Linux) or `gdate` (macOS).
 - Step 3: `-j` JSON parse error → validate JSON string before passing.
 - The moment `create` command has no JSON output; verify with `moment list`.
 
