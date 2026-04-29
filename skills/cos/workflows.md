@@ -56,10 +56,10 @@ cocli record describe "$RECORD" -o json | jq '.'
 # Inspect labels, file count, timestamps
 
 # Step 4a: Download specific files
-cocli record file download "$RECORD" --files "lidar.bag,camera.bag" -d ./output
+cocli record file download "$RECORD" ./output --files "lidar.bag,camera.bag"
 
 # Step 4b: Or download everything
-cocli record download "$RECORD"
+cocli record download "$RECORD" ./output
 ```
 
 **What can go wrong:**
@@ -262,7 +262,7 @@ for RECORD in $RECORDS; do
   DIR="./bulk_download/$BASENAME"
   mkdir -p "$DIR"
   echo "Downloading $RECORD → $DIR"
-  (cd "$DIR" && cocli record download "$RECORD" -r 5) || echo "FAILED: $RECORD"
+  cocli record download "$RECORD" "$DIR" -r 5 || echo "FAILED: $RECORD"
 done
 
 echo "Bulk download complete."

@@ -82,7 +82,7 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | Describe single record | `cocli record describe <record> -o json` | Yes |
 | Get record URL | `cocli record view <record>` | No |
 | List moments in record | `cocli record moment list <record> -o json` | Yes |
-| Download moments.json | `cocli record moment download <record>` | No |
+| Download moments.json | `cocli record moment download <record> <dst-dir>` | No |
 
 ### Modify Records
 
@@ -101,9 +101,9 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 |---|---|---|
 | List record files | `cocli record file list <record> -o json` | Yes |
 | List record files recursively | `cocli record file list <record> -R` | Yes |
-| Download record files | `cocli record file download <record> --files "a.bag,b.bag"` | No |
-| Download all record data | `cocli record download <record>` | No |
-| Download moments | `cocli record download <record> -m` | No |
+| Download record files | `cocli record file download <record> <dst-dir> --files "a.bag,b.bag"` | No |
+| Download all record data | `cocli record download <record> <dst-dir>` | No |
+| Download moments | `cocli record download <record> <dst-dir> -m` | No |
 | Delete record files | `cocli record file delete <record> --files "x.bag" -f` | No |
 | Copy files between records | `cocli record file copy <src> <dst> --files "a.bag" -f` | No |
 | Move files between records | `cocli record file move <src> <dst> --files "a.bag" -f` | No |
@@ -136,7 +136,7 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | Switch profile (interactive — TUI, will hang in automation) | `cocli login switch` | No |
 | Switch profile (non-interactive) | `cocli login set -n <name>` | No |
 | Delete profile | `cocli login delete <name>` | No |
-| Create project | `cocli project create -p <slug> -n "name" -y` | Yes |
+| Create project | `cocli project create -p <slug> -n "name" -b private -y` | Yes |
 | List users | `cocli user list -o json` | Yes |
 | Get user details | `cocli user get <user> -o json` | Yes |
 | List roles | `cocli role list -o json` | Yes |
@@ -168,7 +168,7 @@ Match user intent to the correct command sequence.
 
 1. `cocli record list --keywords "lidar" -o json` (or `--labels`, `-s` for JSON Logic)
 2. Pick record → `cocli record describe <record> -o json`
-3. Download: `cocli record download <record>` (all) or `cocli record file download <record> --files "specific.bag"`
+3. Download: `cocli record download <record> <dst-dir>` (all) or `cocli record file download <record> <dst-dir> --files "specific.bag"`
 
 **Run processing on a record:**
 

@@ -76,8 +76,8 @@ Download all files from a record.
 **Flags:** `-p` (project), `-m` (include moments), `-r` (max retries, default 3), `--flat` (flatten dirs)
 
 ```bash
-cocli record download records/abc-123
-cocli record download records/abc-123 -m -r 5 --flat
+cocli record download records/abc-123 ./output
+cocli record download records/abc-123 ./output -m -r 5 --flat
 ```
 
 ### record copy — JSON: No
@@ -139,10 +139,10 @@ cocli record file list records/abc-123 -R --dir "sensor/" -o json
 
 ### record file download — JSON: No
 
-**Flags:** `-p` (project), `-r` (max retries, default 3), `-d` (destination dir), `--files` (comma-separated), `--flat`
+**Flags:** `-p` (project), `-r` (max retries, default 3), `-d` (filter by directory path within record), `--files` (comma-separated), `--flat`
 
 ```bash
-cocli record file download records/abc-123 --files "lidar.bag,camera.bag" -d ./output
+cocli record file download records/abc-123 ./output --files "lidar.bag,camera.bag"
 ```
 
 ### record file delete — JSON: No
@@ -202,7 +202,7 @@ cocli record moment list records/abc-123 -o json
 **Flags:** `-p` (project), `--flat`
 
 ```bash
-cocli record moment download records/abc-123
+cocli record moment download records/abc-123 ./output
 ```
 
 ---
@@ -294,7 +294,7 @@ for RECORD in $RECORDS; do
   (
     DIR="./downloads/$(basename "$RECORD")"
     mkdir -p "$DIR"
-    cd "$DIR" && cocli record download "$RECORD" -r 5
+    cocli record download "$RECORD" "$DIR" -r 5
   ) &
 done
 wait
