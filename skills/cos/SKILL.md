@@ -65,9 +65,9 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 |---|---|---|
 | Create empty record | `cocli record create -t "title"` | Yes |
 | Create record with labels | `cocli record create -t "title" -l env=prod -l robot=lidar01` | Yes |
-| Upload files to record | `cocli record upload <record> --dir ./data` | No |
-| Upload files to project | `cocli project file upload --dir ./data` | No |
-| Upload with tuned concurrency | `cocli record upload <record> --dir ./data -P 8 -s 256 --no-tty` | No |
+| Upload files to record | `cocli record upload <record> ./data` | No |
+| Upload files to project | `cocli project file upload <project-slug> ./data` | No |
+| Upload with tuned concurrency (`-P` default is 4) | `cocli record upload <record> ./data -P 8 -s 256 --no-tty` | No |
 
 ### Query Records
 
@@ -107,9 +107,9 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | Delete record files | `cocli record file delete <record> --files "x.bag" -f` | No |
 | Copy files between records | `cocli record file copy <src> <dst> --files "a.bag" -f` | No |
 | Move files between records | `cocli record file move <src> <dst> --files "a.bag" -f` | No |
-| List project files | `cocli project file list -o json` | Yes |
-| Download project files | `cocli project file download --files "config.yaml"` | No |
-| Delete project files | `cocli project file delete --files "old.log" -f` | No |
+| List project files | `cocli project file list <project-slug> -o json` | Yes |
+| Download project files | `cocli project file download <project-slug> ./output --files "config.yaml"` | No |
+| Delete project files | `cocli project file delete <project-slug> --files "old.log" -f` | No |
 
 ### Run Actions
 
@@ -133,7 +133,8 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | Task | Command | JSON? |
 |---|---|---|
 | Add login profile | `cocli login add -n <name> -t <token> -p <slug>` | No |
-| Switch profile | `cocli login switch` | No |
+| Switch profile (interactive — TUI, will hang in automation) | `cocli login switch` | No |
+| Switch profile (non-interactive) | `cocli login set -n <name>` | No |
 | Delete profile | `cocli login delete <name>` | No |
 | Create project | `cocli project create -p <slug> -n "name" -y` | Yes |
 | List users | `cocli user list -o json` | Yes |
@@ -160,7 +161,7 @@ Match user intent to the correct command sequence.
 **Upload new data:**
 
 1. `cocli record create -t "title" -l env=prod -o json` → capture record name from JSON
-2. `cocli record upload <record> --dir ./data -P 8 --no-tty`
+2. `cocli record upload <record> ./data -P 8 --no-tty`
 3. Verify: `cocli record file list <record> -o json`
 
 **Find existing data:**
@@ -193,9 +194,9 @@ Go to Preflight section above.
 
 ## Output Parsing
 
-### Commands with `-o json` (13 commands)
+### Commands with `-o json` (14 commands)
 
-Parse JSON directly. Full list: `action list`, `action list-run`, `project list`, `project create`, `project file list`, `record list`, `record create`, `record describe`, `record moment list`, `user list`, `user get`, `role list`, `registry create-credential`.
+Parse JSON directly. Full list: `action list`, `action list-run`, `project list`, `project create`, `project file list`, `record list`, `record create`, `record describe`, `record file list`, `record moment list`, `user list`, `user get`, `role list`, `registry create-credential`.
 
 Common JSON shapes:
 
@@ -222,7 +223,7 @@ Check exit code + capture stderr. stdout is human text — do not parse structur
 
 ```bash
 # Pattern for non-JSON commands
-if cocli record upload <record> --dir ./data --no-tty 2>err.log; then
+if cocli record upload <record> ./data --no-tty 2>err.log; then
   echo "success"
 else
   cat err.log  # diagnostic info in stderr
@@ -247,6 +248,7 @@ These are hard rules. Do not reason around them.
 | "I'll use `--page` for pagination" | Use `--page-token` or `--all`. `--page` is deprecated for records. |
 | "Action run returned 0, so the action completed" | action run is ASYNC. Exit 0 means submitted, not completed. Poll `action list-run`. |
 | "I'll upload without `--no-tty`" | In non-interactive contexts, always pass `--no-tty` to prevent TTY prompts. |
+| "I'll use `login switch` to change profile" | NEVER in automation. `login switch` uses an interactive TUI menu — hangs without TTY. Use `cocli login set -n <name>` instead. |
 
 ## Cross-Skill Referral
 

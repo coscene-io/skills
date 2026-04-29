@@ -25,10 +25,10 @@ cocli record create -t "Lidar Run 7" -d "Highway segment" \
 
 Upload files from a local directory into a record.
 
-**Flags:** `-p` (project), `-H` (include hidden), `--dir` (source directory), `-P` (parallel threads, default 4), `-s` (part-size, default 128MiB), `--no-tty`, `--tty`
+**Flags:** `-p` (project), `-H` (include hidden), `--dir` (remote target subdirectory, optional), `-P` (parallel threads, default 4), `-s` (part-size, default 128MiB), `--no-tty`, `--tty`
 
 ```bash
-cocli record upload records/abc-123 --dir ./data -P 8 -s 256 --no-tty
+cocli record upload records/abc-123 ./data -P 8 -s 256 --no-tty
 ```
 
 ### record describe — JSON: Yes

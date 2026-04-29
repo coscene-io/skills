@@ -20,7 +20,7 @@ echo "Created: $RECORD"
 # Expected: records/<uuid>
 
 # Step 2: Upload files
-cocli record upload "$RECORD" --dir ./sensor_data -P 8 --no-tty
+cocli record upload "$RECORD" ./sensor_data -P 8 --no-tty
 # Exit 0 = success. On failure, check stderr for network/auth errors.
 
 # Step 3: Add additional labels after upload
@@ -141,7 +141,7 @@ Upload data, run an action, poll for completion, check result.
 ```bash
 # Step 1: Create record and upload
 RECORD=$(cocli record create -t "Processing input" -o json | jq -r '.name')
-cocli record upload "$RECORD" --dir ./input_data -P 8 --no-tty
+cocli record upload "$RECORD" ./input_data -P 8 --no-tty
 
 # Step 2: Discover available actions
 cocli action list -o json | jq -c '.[] | {name, displayName}'
@@ -321,11 +321,10 @@ cocli registry login
 # Authenticates Docker client with org registry.
 
 # Step 2: Generate a docker credential for external use
-cocli registry create-credential -o json
+CRED=$(cocli registry create-credential -o json)
 # → {"username": "...", "password": "...", "registry": "..."}
 
 # Step 3: Use credential in Docker
-CRED=$(cocli registry create-credential -o json)
 REGISTRY=$(echo "$CRED" | jq -r '.registry')
 USERNAME=$(echo "$CRED" | jq -r '.username')
 PASSWORD=$(echo "$CRED" | jq -r '.password')
