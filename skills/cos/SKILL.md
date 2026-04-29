@@ -31,7 +31,7 @@ Load `coscene-docs` when the user asks about what things mean, how the platform
 works conceptually, or needs troubleshooting guidance. This skill (`cos`) handles
 CLI execution; `coscene-docs` handles understanding.
 
-- "What does Organization / Project / Record mean?" → load `coscene-docs`
+- "What does Organization / Project / Record / Moment (一刻) mean?" → load `coscene-docs`
 - "How does the automation system work?" → load `coscene-docs`
 - "Why is my upload failing?" → check Error Recovery below first, then load `coscene-docs` for deeper diagnosis
 
@@ -44,7 +44,7 @@ bash -c '
   command -v cocli >/dev/null 2>&1 || { echo "TOOL_MISSING"; exit 0; }
   V=$(cocli --version 2>&1 | head -1)
   cocli login current >/dev/null 2>&1 || { echo "PROFILE_MISSING $V"; exit 0; }
-  cocli project list -o json >/dev/null 2>&1 || { echo "ACCESS_DENIED $V"; exit 0; }
+  timeout 10s cocli project list -o json >/dev/null 2>&1 || { echo "ACCESS_DENIED $V"; exit 0; }
   echo "OK $V"
 '
 ```
@@ -57,6 +57,7 @@ bash -c '
 | `PROFILE_MISSING` | Read `./setup.md` § Profile Bootstrap |
 | `ACCESS_DENIED` | Token expired or invalid. Check Error Recovery table below. If unresolvable, read `./setup.md` § Profile Bootstrap to re-add. |
 | `OK` | Proceed. Version string included for reference. |
+| *(other)* | Unexpected output. Read `./setup.md` § Install, verify binary, re-run preflight. |
 
 If version in the OK output looks outdated or is a dev build (`v0.0.0+...`), suggest `cocli update` or read `./setup.md` § Update.
 
@@ -164,7 +165,7 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 
 | Task | Command | JSON? |
 |---|---|---|
-| Add login profile | `cocli login add -n <name> -t <token> -p <slug>` | No |
+| Add login profile | `cocli login add -n <name> -t <token> -p <slug>` — history-suppress per setup.md § Profile Bootstrap (zsh: `setopt HIST_IGNORE_SPACE`; bash: `HISTCONTROL=ignorespace`) | No |
 | Switch profile (interactive — TUI, will hang in automation) | `cocli login switch` | No |
 | Switch profile (non-interactive) | `cocli login set -n <name>` | No |
 | Delete profile | `cocli login delete <name>` | No |
@@ -286,7 +287,7 @@ These are hard rules. Do not reason around them.
 
 | Question | Action |
 |---|---|
-| "What does Organization / Project / Record / Moment mean?" | Load `coscene-docs` skill |
+| "What does Organization / Project / Record / Moment (一刻) mean?" | Load `coscene-docs` skill |
 | "How does the automation / action system work conceptually?" | Load `coscene-docs` skill |
 
 ## Error Recovery

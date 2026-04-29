@@ -18,14 +18,14 @@ Detect the user's OS and architecture, then install cocli.
 Single command — downloads, decompresses, installs to `/usr/local/bin`:
 
 ```bash
-curl -fsSL "https://download.coscene.cn/cocli/latest/$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/').gz" | gzip -d > cocli && chmod +x cocli && sudo mv cocli /usr/local/bin/
+curl -fsSL "https://download.coscene.cn/cocli/latest/$(uname -s | tr A-Z a-z)-$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/').gz" | gzip -d > cocli && chmod +x cocli && sudo mv cocli /usr/local/bin/
 ```
 
 If `sudo` is unavailable or the user prefers a local install:
 
 ```bash
 mkdir -p ~/.local/bin
-curl -fsSL "https://download.coscene.cn/cocli/latest/$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/').gz" | gzip -d > ~/.local/bin/cocli && chmod +x ~/.local/bin/cocli
+curl -fsSL "https://download.coscene.cn/cocli/latest/$(uname -s | tr A-Z a-z)-$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/').gz" | gzip -d > ~/.local/bin/cocli && chmod +x ~/.local/bin/cocli
 ```
 
 Ensure `~/.local/bin` is in `$PATH`.
@@ -57,7 +57,7 @@ sudo cocli update
 To install a specific version instead:
 
 ```bash
-curl -fsSL "https://download.coscene.cn/cocli/v1.2.3/$(uname -s | tr A-Z a-z)-$(uname -m | sed 's/x86_64/amd64/').gz" | gzip -d > cocli && chmod +x cocli && sudo mv cocli /usr/local/bin/
+curl -fsSL "https://download.coscene.cn/cocli/v1.2.3/$(uname -s | tr A-Z a-z)-$(uname -m | sed -e 's/x86_64/amd64/' -e 's/aarch64/arm64/').gz" | gzip -d > cocli && chmod +x cocli && sudo mv cocli /usr/local/bin/
 ```
 
 ## Profile Bootstrap
@@ -74,14 +74,26 @@ First-time auth setup. Requires a coScene bearer token and project slug.
 
 ### Add profile
 
-Execute with token hygiene — leading space prevents the token from entering shell history:
+Execute with token hygiene — leading space prevents the token from entering shell history. Shell-detect ensures this works on both bash and zsh:
 
 ```bash
-HISTCONTROL=ignorespace
+if [ -n "$ZSH_VERSION" ]; then setopt HIST_IGNORE_SPACE
+elif [ -n "$BASH_VERSION" ]; then HISTCONTROL=ignorespace
+else echo "Unknown shell — manually clear history after this command"; fi
  cocli login add -n default -t '<bearer-token>' -p '<project-slug>' -e '<endpoint>'
 ```
 
-The leading space before `cocli` is intentional. With `HISTCONTROL=ignorespace`, commands starting with a space are excluded from shell history, keeping the bearer token out of `~/.bash_history` / `~/.zsh_history`.
+The leading space before `cocli` is intentional. With history-ignore-space enabled (bash: `HISTCONTROL=ignorespace`; zsh: `setopt HIST_IGNORE_SPACE`), commands starting with a space are excluded from shell history, keeping the bearer token out of `~/.bash_history` / `~/.zsh_history`.
+
+**Process-table exposure:** The token is briefly visible in `/proc/<pid>/cmdline` while the command runs. For higher security, use the `COS_TOKEN` environment variable instead:
+
+```bash
+read -rs COS_TOKEN && export COS_TOKEN
+cocli login add -n default -t "$COS_TOKEN" -p '<project-slug>' -e '<endpoint>'
+unset COS_TOKEN
+```
+
+`read -rs` suppresses echo and avoids both history and process-table exposure. cocli reads `COS_TOKEN` from the environment (see `COS_TOKEN`, `COS_ENDPOINT`, `COS_PROJECT` in cocli source).
 
 ### Verify
 
