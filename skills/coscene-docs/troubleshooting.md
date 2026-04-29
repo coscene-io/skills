@@ -14,13 +14,13 @@ Diagnostic tree format: symptom, then check, then resolution.
 
 **Symptom:** Connection timeouts or 404s. Data exists on one endpoint but not the other.
 **Check:** `cocli login current` — China: `openapi.coscene.cn`, International: `openapi.coscene.io`.
-**Fix:** `cocli login switch` to correct profile or create new one for the right endpoint.
+**Fix:** `cocli login switch` to correct profile or create new one for the right endpoint (interactive TUI — for agents, use `cocli login set -n <profile-name>` instead).
 
 ### Profile mismatch
 
 **Symptom:** Data from wrong org/project, or insufficient permissions.
 **Check:** `cocli login list -v` — review all profiles.
-**Fix:** `cocli login switch` to the correct profile.
+**Fix:** `cocli login switch` to the correct profile (interactive TUI — for agents, use `cocli login set -n <profile-name>` instead).
 
 ### 403 Forbidden in action execution
 

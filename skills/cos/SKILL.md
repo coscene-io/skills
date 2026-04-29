@@ -5,9 +5,6 @@ description: >
   uploading records, querying data, managing projects, running actions, or checking
   auth/profile status. Covers 40 CLI commands across records, projects, actions,
   and administration.
-derived-from: "[[coscene-skills-compilation]]"
-deploy-target: cp-repos://coscene-skills/skills/cos
-tags: [domain/coscene, type/skill]
 ---
 
 # cos
