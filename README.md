@@ -7,17 +7,21 @@ Agent Skills for [coScene](https://coscene.io/) — robotics data platform autom
 Copy-paste this prompt into Claude Code:
 
 ```
-Clone https://github.com/coscene-io/skills to ~/coscene-skills (skip if already exists), then symlink each skill directory under skills/ into ~/.claude/skills/ so they're available as slash commands. Verify by listing ~/.claude/skills/cocli and ~/.claude/skills/coscene-docs.
+Clone https://github.com/coscene-io/coscene-skills to ~/coscene-skills (skip if already exists), then symlink each skill directory under skills/ into ~/.claude/skills/ so they're available as slash commands. Verify by listing ~/.claude/skills/cocli and ~/.claude/skills/coscene-docs.
 ```
 
 Or manually:
 
 ```bash
-git clone https://github.com/coscene-io/skills.git ~/coscene-skills
+git clone https://github.com/coscene-io/coscene-skills.git ~/coscene-skills
 mkdir -p ~/.claude/skills
 ln -sf ~/coscene-skills/skills/cocli ~/.claude/skills/cocli
 ln -sf ~/coscene-skills/skills/coscene-docs ~/.claude/skills/coscene-docs
 ```
+
+The symlinks are still needed because this repository contains multiple skills
+under `skills/`; each runtime skill directory must point directly at a folder
+that contains its own `SKILL.md`.
 
 ## Skills
 
