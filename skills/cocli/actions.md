@@ -39,6 +39,8 @@ Image checklist before configuring an action:
 - Prefer immutable tags or digests for validated actions; avoid `latest` for
   repeatable workflows.
 
+---
+
 ## Discover Actions
 
 List all actions available in the current project.

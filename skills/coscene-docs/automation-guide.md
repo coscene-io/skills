@@ -346,10 +346,10 @@ Action A → writes record.patch.json (label: "stage-1") → platform creates re
 - **Output structure:** always follow the `records/*/` convention in
   `$COS_OUTPUT_VOLUME` with `.cos/record.patch.json` — the platform ignores
   output files that do not follow this structure for record operations
-- **Image registry:** for custom container actions, prefer the org registry
-  returned by `cocli` over ad hoc public images; verify the full image reference
-  and architecture before configuring the action
 - **Resource sizing:** start with 2C/4G and scale up only if action execution
   hits OOM or timeout; over-provisioning wastes quota
 - **Idempotency:** design actions to be re-runnable — use record `id` for
   updates to avoid creating duplicate records on retry
+- **Image registry:** for custom container actions, prefer the org registry
+  returned by `cocli` over ad hoc public images; verify the full image reference
+  and architecture before configuring the action

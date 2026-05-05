@@ -153,8 +153,6 @@ cocli record file download records/abc-123 ./output --files "lidar.bag,camera.ba
 
 ### record file delete — JSON: No
 
-Ask the user for explicit confirmation before running this command.
-
 **Flags:** `-p` (project), `-f` (force), `--files` (comma-separated)
 
 ```bash
@@ -171,8 +169,6 @@ cocli record file copy records/src-123 records/dst-456 -P other-project --files 
 ```
 
 ### record file move — JSON: No
-
-Ask the user for explicit confirmation before running this command.
 
 **Flags:** `-p` (project), `-P` (destination project), `--files` (comma-separated), `-f` (force)
 
@@ -292,9 +288,6 @@ done
 
 ### Batch label update
 
-For bulk metadata changes, show the target list and ask the user for explicit
-confirmation before running the loop.
-
 ```bash
 RECORDS=$(cocli record list --labels "env=staging" --all -o json | jq -r '.[].name')
 for RECORD in $RECORDS; do
@@ -336,6 +329,6 @@ STALE=$(cocli record list --labels "status=stale" --all -o json | jq -r '.[].nam
 echo "Will delete $(echo "$STALE" | wc -l | tr -d ' ') records:"
 echo "$STALE"
 
-# Ask the user to confirm the exact list above, then uncomment to execute:
+# Uncomment to execute:
 # for RECORD in $STALE; do cocli record delete "$RECORD" -f; done
 ```
