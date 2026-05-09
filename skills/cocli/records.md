@@ -186,6 +186,11 @@ Moments mark key time segments within a record — critical events, failures, or
 
 **Flags:** `-p` (project), `-n` (name, required), `-d` (description), `-D` (duration in seconds, required), `-T` (trigger-time in epoch seconds, required), `-j` (custom fields JSON), `-a` (assigner), `-e` (assignee), `-R` (rule), `-s` (skip-create-task), `-S` (sync-task)
 
+By default, `record moment create` also creates an associated task. Add `-s` /
+`--skip-create-task` when you only want the timeline annotation without a task.
+The `-a`, `-e`, and `-S` flags are task-related; run `--help` for the current
+CLI wording before using them in automation.
+
 ```bash
 cocli record moment create records/abc-123 \
   -n "Collision detected" \
@@ -194,6 +199,9 @@ cocli record moment create records/abc-123 \
   -d "Front lidar detected obstacle at 2m" \
   -j '{"severity": "high", "sensor": "lidar_front"}'
 ```
+
+For a moment-only annotation, add `-s` / `--skip-create-task` to the create
+command.
 
 **Tip:** Convert timestamps: `date -d '2026-04-28T14:30:00Z' +%s` (Linux) or `gdate -d '...' +%s` (macOS with coreutils).
 
