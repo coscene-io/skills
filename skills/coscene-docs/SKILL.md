@@ -87,7 +87,9 @@ collection. Each moment has a name, description, start/end timestamps, and optio
 structured attributes. Created manually during visualization playback or
 automatically by rule engine triggers on the device edge. Moments are NOT comments;
 they are anchored to sensor data timelines with precise time ranges, used for data
-diagnosis and quality management.
+diagnosis and quality management. Creating a moment with `cocli record moment
+create` also creates an associated task by default; load the `cocli` skill for
+details on `--skip-create-task` when task creation is not desired.
 
 ### Action (动作)
 

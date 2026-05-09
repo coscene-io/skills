@@ -142,7 +142,7 @@ Task-to-command routing. Not flag-complete — run `cocli <cmd> --help` for full
 | Replace labels on record | `cocli record update <record> --update-labels "k=v"` | No |
 | Delete labels from record | `cocli record update <record> --delete-labels "oldkey"` | No |
 | Delete a record | `cocli record delete <record> -f` | No |
-| Create moment in record | `cocli record moment create <record> -n "event" -D 10 -T <epoch-seconds>` | No |
+| Create moment in record (creates a task by default; add `-s` to skip) | `cocli record moment create <record> -n "event" -D 10 -T <epoch-seconds>` | No |
 
 ### Manage Files
 
@@ -250,7 +250,7 @@ Match user intent to the correct command sequence.
 
 - Metadata: `cocli record update <record> -t "new title" -l key=val`
 - Labels: `--update-labels` (replace), `--delete-labels` (remove), `-l` (append)
-- Moments: `cocli record moment create <record> -n "event" -D 10 -T <epoch-seconds>`
+- Moments: `cocli record moment create <record> -n "event" -D 10 -T <epoch-seconds>` creates a task by default; add `-s` / `--skip-create-task` for moment-only annotations.
 
 **Environment check:**
 Go to Preflight section above.

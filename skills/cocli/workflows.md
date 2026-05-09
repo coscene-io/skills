@@ -179,6 +179,8 @@ cocli record file list "$RECORD" -R -o json | jq '.'
 ## 6. Moment Annotation
 
 Describe a record, then create moment annotations at specific timestamps.
+`record moment create` creates an associated task by default; add `-s` /
+`--skip-create-task` when the workflow should only create timeline annotations.
 
 ```bash
 # Step 1: Get record metadata
@@ -211,6 +213,7 @@ cocli record moment list records/abc-123 -o json | jq 'length'
 **What can go wrong:**
 - Step 3: Invalid trigger time → `-T` takes epoch seconds (float), not RFC 3339. Convert: `date -d '2026-04-28T14:30:00Z' +%s` (Linux) or `gdate` (macOS).
 - Step 3: `-j` JSON parse error → validate JSON string before passing.
+- Unexpected task created → add `-s` / `--skip-create-task` for moment-only annotations.
 - The moment `create` command has no JSON output; verify with `moment list`.
 
 ---
