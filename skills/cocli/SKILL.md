@@ -67,6 +67,23 @@ If version in the OK output looks outdated or is a dev build (`v0.0.0+...`), sug
 
 Security note: `~/.cocli.yaml` stores bearer tokens in plaintext. Ensure `chmod 0600 ~/.cocli.yaml`.
 
+### Endpoint and Profile Selection
+
+Profiles carry the target coScene instance. If the user gives a platform URL,
+match the active profile endpoint to that URL's instance before running data
+commands:
+
+| Platform URL host | Required profile endpoint |
+|---|---|
+| `coscene.cn` | `https://openapi.coscene.cn` |
+| `volc.coscene.cn` | `https://openapi.volc.coscene.cn` |
+| `coscene.io` | `https://openapi.coscene.io` |
+
+Do not treat `cocli --version` as the active endpoint. It shows the binary's
+default release endpoint, while `cocli login current` shows the profile endpoint
+actually used by commands. If no existing profile matches the user's URL, read
+`./setup.md` § Profile Bootstrap and create one with `cocli login add -e`.
+
 ## Agent Preferences
 
 On first interaction, check for user preferences:
@@ -195,7 +212,7 @@ cocli.
 
 | Task | Command | JSON? |
 |---|---|---|
-| Add login profile | `cocli login add -n <name> -t <token> -p <slug>` — history-suppress per setup.md § Profile Bootstrap (zsh: `setopt HIST_IGNORE_SPACE`; bash: `HISTCONTROL=ignorespace`) | No |
+| Add login profile | `cocli login add -n <name> -t <token> -p <slug> -e <endpoint>` — choose endpoint from the platform URL; history-suppress per setup.md § Profile Bootstrap (zsh: `setopt HIST_IGNORE_SPACE`; bash: `HISTCONTROL=ignorespace`) | No |
 | Switch profile (interactive — TUI, will hang in automation) | `cocli login switch` | No |
 | Switch profile (non-interactive) | `cocli login set -n <name>` | No |
 | Delete profile | `cocli login delete <name>` | No |
@@ -306,9 +323,10 @@ These are hard rules. Do not reason around them.
 |---|---|
 | "I'll use an internal or undocumented API" | NEVER in public skills. Use `cocli` first, then public OpenAPI only for supported public operations. If neither exposes the capability, direct the user to the coScene web UI. |
 | "The default profile is probably right" | ALWAYS run `cocli login current` first. Profiles carry org + project context. |
+| "The URL is `volc.coscene.cn`, but the default endpoint is probably fine" | NEVER. Match the profile endpoint to the platform URL host, for example `volc.coscene.cn` → `https://openapi.volc.coscene.cn`. |
 | "I don't need `-o json`" | ALWAYS use `-o json` when available. Human table output is not parseable. |
 | "I can skip `-f` on action run" | NEVER. Without `-f`, cocli prompts interactively and hangs. |
-| "I'll hardcode the endpoint URL" | NEVER. The active profile handles endpoint selection. |
+| "I'll hardcode the endpoint URL for data commands" | NEVER. The active profile handles endpoint selection. Only set an endpoint when creating/updating a profile, then verify with `cocli login current`. |
 | "I'll use `record view` to see the record" | `record view` only prints a URL (or opens browser with `-w`). Use `record describe -o json`. |
 | "I'll skip `--skip-params` on action run" | Use `--skip-params` for defaults (no `-P`), or `-P key=val` for explicit params. They are mutually exclusive — never combine. |
 | "I'll use `--page` for pagination" | Use `--page-token` or `--all`. `--page` is deprecated for records. |
