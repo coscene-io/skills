@@ -64,13 +64,33 @@ curl -fsSL "https://download.coscene.cn/cocli/v1.2.3/$(uname -s | tr A-Z a-z)-$(
 
 First-time auth setup. Requires a coScene bearer token and project slug.
 
+### Choose the API endpoint
+
+When the user provides a platform URL, derive the cocli API endpoint from that
+URL before adding the profile. Do not use the web UI host itself as the endpoint.
+
+| Platform URL host | cocli endpoint |
+|---|---|
+| `coscene.cn` | `https://openapi.coscene.cn` |
+| `volc.coscene.cn` | `https://openapi.volc.coscene.cn` |
+| `coscene.io` | `https://openapi.coscene.io` |
+
+Rule of thumb: keep `https://`, strip the URL path, and add the `openapi.`
+prefix to the instance host. For example,
+`https://volc.coscene.cn/coscene-hy/demo/records` uses
+`https://openapi.volc.coscene.cn`.
+
+The endpoint shown by `cocli --version` is only the binary's default release
+endpoint. A profile can point to a different instance, so always verify with
+`cocli login current` after adding or switching profiles.
+
 ### Gather credentials
 
 **AskUserQuestion:** "What is your coScene bearer token? (Find it in the platform UI: Settings > API Keys)"
 
 **AskUserQuestion:** "What is your default project slug? (Format: org-slug/project-slug)"
 
-**AskUserQuestion:** "What is your coScene endpoint? (Default: https://openapi.coscene.cn — most users keep the default)"
+**AskUserQuestion:** "What is your coScene API endpoint? Derive it from the platform URL above. Default public CN: https://openapi.coscene.cn"
 
 ### Add profile
 
@@ -102,7 +122,13 @@ cocli login current
 cocli project list -o json
 ```
 
-Both should succeed without errors. If `project list` fails with a permission error, the token may lack project access — check with the organization admin.
+Both should succeed without errors. Confirm that `cocli login current` shows the
+expected endpoint for the user's platform URL. If the user gave a
+`volc.coscene.cn` URL, the endpoint must be `https://openapi.volc.coscene.cn`,
+not `https://openapi.coscene.cn`.
+
+If `project list` fails with a permission error, the token may lack project
+access — check with the organization admin.
 
 ### Secure config file
 
